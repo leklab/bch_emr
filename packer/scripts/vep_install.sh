@@ -38,7 +38,9 @@ function install_prereqs {
         HTTP::Tiny \
         JSON \
         Module::Build \
-        Try::Tiny
+        Try::Tiny \
+        Archive::Extract \
+        Archive::Zip
 
     # Installed alone due to package dependency issues
     cpanm \
@@ -102,12 +104,10 @@ function vep_install {
 
 if [ "$VEP_VERSION" != "none" ]; then
     install_prereqs
-    #gsutil_install
     vep_install
 
     # Cleanup
     rm -rf /root/.cpanm
-    rm -rf /root/.vep
     rm -rf /root/ensembl-vep
 else
     echo "VEP_VERSION environment variable was \"none\".  Skipping VEP installation."
