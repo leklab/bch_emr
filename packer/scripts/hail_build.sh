@@ -7,8 +7,8 @@ HAIL_PROFILE="/etc/profile.d/hail.sh"
 JAR_HAIL="hail-all-spark.jar"
 
 #No longer creates zip but use wheel instead
-ZIP_HAIL="hail-python.zip"
-#WHEEL_HAIL="hail-python.zip"
+#ZIP_HAIL="hail-python.zip"
+WHEEL_HAIL="hail-$HAIL_VERSION-py3-none-any.whl"
 
 REPOSITORY_URL="https://github.com/hail-is/hail.git"
 
@@ -48,6 +48,7 @@ function hail_build
 
 function hail_install
 {
+
   echo "Installing Hail locally"
 
   cat <<- HAIL_PROFILE > "$HAIL_PROFILE"
@@ -57,21 +58,16 @@ function hail_install
   export PYTHONPATH="$HAIL_ARTIFACT_DIR/$ZIP_HAIL:\$SPARK_HOME/python:\$SPARK_HOME/python/lib/py4j-src.zip:\$PYTHONPATH"
 HAIL_PROFILE
 
-  if [[ "$HAIL_VERSION" < 0.2.24 ]]; then
-    cp "$PWD/build/distributions/$ZIP_HAIL" "$HAIL_ARTIFACT_DIR"
-  fi
-
   cp "$PWD/build/libs/$JAR_HAIL" "$HAIL_ARTIFACT_DIR"
+  cp "$PWD/build/deploy/dist/$WHEEL_HAIL" "$HAIL_ARTIFACT_DIR"
 }
 
 function cleanup()
 {
-  rm -rf /root/.gradle
   rm -rf /home/ubuntu/hail
-  rm -rf /root/hail
 }
 
 install_prereqs
 hail_build
-#hail_install
-#cleanup
+hail_install
+cleanup
