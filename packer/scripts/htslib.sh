@@ -8,15 +8,9 @@ set -xe
 
 REPOSITORY_URL="https://github.com/samtools/htslib.git"
 
-yum -y install \
-    autoconf \
-    bzip2-devel \
-    gcc72 \
-    git \
-    libcurl-devel \
-    openssl-devel \
-    xz-devel \
-    zlib-devel
+NEEDRESTART_MODE=a apt install -y libbz2-dev \
+autoconf \
+liblzma-dev
 
 if [ -z "$HTSLIB_VERSION" ]; then
     HTSLIB_VERSION="develop";
@@ -28,8 +22,10 @@ cd /opt
 git clone "$REPOSITORY_URL"
 cd htslib
 git checkout "$HTSLIB_VERSION"
-autoheader
-autoconf
+
+git submodule update --init --recursive
+
+autoreconf -i
 ./configure
 make -j "$(grep -c ^processor /proc/cpuinfo)"
 make install

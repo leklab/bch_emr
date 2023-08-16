@@ -8,11 +8,7 @@ set -xe
 REPOSITORY_URL="https://github.com/samtools/samtools.git"
 HTSLIB_DIR="/opt/htslib"
 
-yum -y install \
-    autoconf \
-    gcc72 \
-    git \
-    ncurses-devel
+NEEDRESTART_MODE=a apt-get install -y libncurses-dev
 
 if [ -z "$SAMTOOLS_VERSION" ]; then
     SAMTOOLS_VERSION="master";

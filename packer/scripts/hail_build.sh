@@ -5,71 +5,30 @@ export PATH=$PATH:/usr/local/bin
 HAIL_ARTIFACT_DIR="/opt/hail"
 HAIL_PROFILE="/etc/profile.d/hail.sh"
 JAR_HAIL="hail-all-spark.jar"
+
+#No longer creates zip but use wheel instead
 ZIP_HAIL="hail-python.zip"
+#WHEEL_HAIL="hail-python.zip"
+
 REPOSITORY_URL="https://github.com/hail-is/hail.git"
 
 function install_prereqs {
   mkdir -p "$HAIL_ARTIFACT_DIR"
 
-  yum -y remove java-1.7.0-openjdk*
+  apt update
 
-  yum -y update
-  yum -y install \
-  cmake \
-  gcc72-c++ \
-  git \
-  java-1.8.0-openjdk \
-  java-1.8.0-openjdk-devel \
-  lz4 \
-  lz4-devel \
-  python38 \
-  python38-devel \
-  python38-setuptools
+  NEEDRESTART_MODE=a apt-get install -y python-is-python3 \
+  python3-pip \
+  openjdk-8-jdk \
+  liblz4-dev \
+  awscli
 
   # Upgrade latest latest pip
-  python -m pip install --upgrade pip
   python3 -m pip install --upgrade pip
 
-  WHEELS="argparse
-  bokeh
-  cycler
-  decorator
-  joblib
-  jupyter
-  kiwisolver
-  llvmlite
-  matplotlib
-  numba
-  numpy
-  oauth
-  pandas
-  parsimonious
-  pyserial
-  pytest
-  pytest-runner
-  pytest-html
-  pytest-xdist
-  pytest-instafail
-  pytest-asyncio
-  pytest-timestamper
-  pytest-timeout
-  requests
-  scikit-learn
-  scipy
-  seaborn
-  statsmodels
-  umap-learn
-  utils
-  wheel"
-
-  for WHEEL_NAME in $WHEELS
-  do
-    python3 -m pip install "$WHEEL_NAME"
-  done
-
-  #python27 -m pip install ipykernel
-  python3 -m pip install ipykernel
-  #python3 -m pip install --use-deprecated=legacy-resolver "avro<1.12,>=1.10"
+  #install here
+  python3 -m pip install -U pyopenssl cryptography
+  python3 -m pip install --ignore-installed -U pyasn1-modules
 
 }
 
@@ -81,27 +40,10 @@ function hail_build
   cd hail/hail/
   git checkout "$HAIL_VERSION"
 
-  JAVA_PATH=$(dirname "/usr/lib/jvm/java-1.8.0/include/.")
-  if [ -z "$JAVA_PATH" ]; then
-    echo "Java 8 was not found"
-    exit 1
-  else
-    ln -s "$JAVA_PATH" /etc/alternatives/jre/include
-  fi
+  make install-on-cluster HAIL_COMPILE_NATIVES=1 SPARK_VERSION="$SPARK_VERSION"
 
-  if [ "$HAIL_VERSION" != "master " ] && [[ "$HAIL_VERSION" < 0.2.18 ]]; then
-    if [ "$SPARK_VERSION" = "2.2.0" ]; then
-      ./gradlew -Dspark.version="$SPARK_VERSION" shadowJar archiveZip
-    else
-      ./gradlew -Dspark.version="$SPARK_VERSION" -Dbreeze.version=0.13.2 -Dpy4j.version=0.10.6 shadowJar archiveZip
-    fi
-  elif [ "$HAIL_VERSION" = "master" ] || [[ "$HAIL_VERSION" > 0.2.23 ]]; then
-    make wheel HAIL_COMPILE_NATIVES=1 SPARK_VERSION="$SPARK_VERSION"
-    #make install HAIL_COMPILE_NATIVES=1 SPARK_VERSION="$SPARK_VERSION"
-  else
-    echo "Hail 0.2.19 - 0.2.23 builds are not possible due to incompatiable configurations resolved in 0.2.24."
-    exit 1
-  fi
+  python3 -m pip install ipykernel
+
 }
 
 function hail_install
@@ -125,11 +67,11 @@ HAIL_PROFILE
 function cleanup()
 {
   rm -rf /root/.gradle
-  rm -rf /home/ec2-user/hail
+  rm -rf /home/ubuntu/hail
   rm -rf /root/hail
 }
 
-#install_prereqs
-#hail_build
+install_prereqs
+hail_build
 #hail_install
 #cleanup

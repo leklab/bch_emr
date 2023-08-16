@@ -22,17 +22,10 @@ export PATH="$PATH:/usr/local/bin"
 export LC_ALL=en_US.UTF-8
 
 function install_prereqs {
-    yum -y install \
-        gcc72-c++ \
-        gd-devel \
-        expat-devel \
-        git \
-        mysql55-devel \
-        perl-App-cpanminus \
-        perl-Env \
-        unzip \
-        which \
-        zlib-devel
+    NEEDRESTART_MODE=a apt install -y cpanminus \
+        libmysqlclient-dev \
+        pkg-config \
+        libgd-dev
 
     cpanm \
         autodie \
@@ -40,6 +33,8 @@ function install_prereqs {
         DBD::mysql \
         DBI \
         Digest::MD5 \
+        GD \
+        ExtUtils::PkgConfig \
         HTTP::Tiny \
         JSON \
         Module::Build \
@@ -48,10 +43,6 @@ function install_prereqs {
     # Installed alone due to package dependency issues
     cpanm \
         Bio::DB::HTS::Faidx
-
-    # Force install
-    cpanm --force --verbose \
-        GD
 
 }
 
@@ -104,14 +95,14 @@ function vep_install {
     #aws s3 sync "$VEP_S3_SOURCE$VEP_S3_LOFTEE_PATH" "$VEP_DIR"/loftee_data
     #gunzip "$VEP_DIR"/loftee_data/phylocsf_gerp.sql.gz
 
-    aws s3 cp "$VEP_S3_SOURCE/vep-GRCh38.json" "$VEP_DIR"/
-    aws s3 cp "$VEP_S3_SOURCE/vep-GRCh37.json" "$VEP_DIR"/
+    #aws s3 cp "$VEP_S3_SOURCE/vep-GRCh38.json" "$VEP_DIR"/
+    #aws s3 cp "$VEP_S3_SOURCE/vep-GRCh37.json" "$VEP_DIR"/
 
 }
 
 if [ "$VEP_VERSION" != "none" ]; then
     install_prereqs
-    gsutil_install
+    #gsutil_install
     vep_install
 
     # Cleanup
