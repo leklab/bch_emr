@@ -44,15 +44,11 @@
   "provisioners": [
     {
       "type": "shell",
-      "inline": "sudo sed -i "s/#\$nrconf{kernelhints} = -1;/\$nrconf{kernelhints} = -1;/g" /etc/needrestart/needrestart.conf"
-    },
-    {
-      "type": "shell",
       "environment_vars": [
         "HAIL_VERSION={{user `hail_version`}}",
         "SPARK_VERSION={{user `spark_version`}}"
       ],
-      "execute_command": "sudo -S bash -c 'ulimit -Sn && ulimit -Hn && {{ .Vars }} {{ .Path }}'",
+      "execute_command": "sudo -S bash -c '{{ .Vars }} {{ .Path }}'",
       "scripts": [
         "scripts/hail_build.sh"
       ]

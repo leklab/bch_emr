@@ -15,7 +15,9 @@ REPOSITORY_URL="https://github.com/hail-is/hail.git"
 function install_prereqs {
   mkdir -p "$HAIL_ARTIFACT_DIR"
 
-  apt update
+  sed -i "s/#\$nrconf{kernelhints} = -1;/\$nrconf{kernelhints} = -1;/g" /etc/needrestart/needrestart.conf
+
+  apt update -y
 
   NEEDRESTART_MODE=a apt-get install -y python-is-python3 \
   python3-pip \
