@@ -6,5 +6,5 @@ local({r <- getOption("repos")
 # The base path may not include this
 path_original <- Sys.getenv("PATH")
 Sys.setenv(PATH = paste(path_original, "/usr/local/bin", sep = ":"))
-#install.packages('IRkernel')
-#IRkernel::installspec(user = FALSE)
+install.packages('IRkernel')
+IRkernel::installspec(user = FALSE)

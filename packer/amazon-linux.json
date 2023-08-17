@@ -49,6 +49,17 @@
     {
       "type": "shell",
       "environment_vars": [
+        "HAIL_VERSION={{user `hail_version`}}",
+        "SPARK_VERSION={{user `spark_version`}}"
+      ],
+      "execute_command": "sudo -S bash -c 'ulimit -Sn && ulimit -Hn && {{ .Vars }} {{ .Path }}'",
+      "scripts": [
+        "scripts/hail_build.sh"
+      ]
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
         "VEP_VERSION={{user `vep_version`}}",
         "RODA_BUCKET={{user `roda_bucket`}}",
         "HTSLIB_VERSION={{user `htslib_version`}}",
@@ -59,6 +70,36 @@
         "scripts/htslib.sh",
         "scripts/samtools.sh",
         "scripts/vep_install.sh"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "scripts/R_install.R",
+      "destination": "/tmp/R_install.R"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo R --no-save < /tmp/R_install.R && rm /tmp/R_install.R"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "scripts/cluster_manifest.sh",
+      "destination": "/tmp/cluster_manifest.sh"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "chmod 755 /tmp/cluster_manifest.sh",
+        "sudo mv /tmp/cluster_manifest.sh /usr/local/bin/cluster_manifest.sh"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "sudo -S bash -c '{{ .Path }}'",
+      "scripts": [
+        "scripts/ami_cleanup.sh"
       ]
     }
   ]

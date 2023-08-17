@@ -43,6 +43,7 @@ function hail_build
   make install-on-cluster HAIL_COMPILE_NATIVES=1 SPARK_VERSION="$SPARK_VERSION"
 
   python3 -m pip install ipykernel
+  python3 -m pip install jupyter
 
 }
 
