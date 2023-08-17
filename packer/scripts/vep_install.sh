@@ -25,9 +25,7 @@ function install_prereqs {
     NEEDRESTART_MODE=a apt install -y cpanminus \
         libmysqlclient-dev \
         pkg-config \
-        libgd-dev \
-        r-base \
-        r-base-dev
+        libgd-dev
 
     cpanm \
         autodie \

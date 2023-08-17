@@ -21,7 +21,10 @@ function install_prereqs {
   python3-pip \
   openjdk-8-jdk \
   liblz4-dev \
-  awscli
+  awscli \
+  r-base \
+  r-base-dev
+
 
   # Upgrade latest latest pip
   python3 -m pip install --upgrade pip
