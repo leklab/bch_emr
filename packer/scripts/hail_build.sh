@@ -17,7 +17,7 @@ function install_prereqs {
 
   sed -i "s/#\$nrconf{kernelhints} = -1;/\$nrconf{kernelhints} = -1;/g" /etc/needrestart/needrestart.conf
 
-  apt update -y
+  apt-get update -y
 
   NEEDRESTART_MODE=a apt-get install -y python-is-python3 \
   python3-pip \
@@ -49,6 +49,7 @@ function hail_build
 
   python3 -m pip install ipykernel
   python3 -m pip install jupyter
+  python3 -m pip install pyspark==3.3.2
 
 }
 
@@ -58,10 +59,10 @@ function hail_install
   echo "Installing Hail locally"
 
   cat <<- HAIL_PROFILE > "$HAIL_PROFILE"
-  export SPARK_HOME="/usr/lib/spark"
-  export PYSPARK_PYTHON="python3"
-  export PYSPARK_SUBMIT_ARGS="--conf spark.kryo.registrator=is.hail.kryo.HailKryoRegistrator --conf spark.serializer=org.apache.spark.serializer.KryoSerializer pyspark-shell"
-  export PYTHONPATH="$HAIL_ARTIFACT_DIR/$ZIP_HAIL:\$SPARK_HOME/python:\$SPARK_HOME/python/lib/py4j-src.zip:\$PYTHONPATH"
+export SPARK_HOME="/usr/lib/spark"
+export PYSPARK_PYTHON="python3"
+export PYSPARK_SUBMIT_ARGS="--conf spark.kryo.registrator=is.hail.kryo.HailKryoRegistrator --conf spark.serializer=org.apache.spark.serializer.KryoSerializer pyspark-shell"
+export PYTHONPATH="$HAIL_ARTIFACT_DIR/$WHEEL_HAIL:\$SPARK_HOME/python:\$SPARK_HOME/python/lib/py4j-src.zip:\$PYTHONPATH"
 HAIL_PROFILE
 
   cp "$PWD/build/libs/$JAR_HAIL" "$HAIL_ARTIFACT_DIR"
