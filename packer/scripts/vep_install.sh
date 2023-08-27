@@ -22,29 +22,21 @@ export PATH="$PATH:/usr/local/bin"
 export LC_ALL=en_US.UTF-8
 
 function install_prereqs {
-    NEEDRESTART_MODE=a apt install -y cpanminus \
-        libmysqlclient-dev \
-        pkg-config \
-        libgd-dev
 
-    cpanm \
-        autodie \
-        Compress::Zlib \
-        DBD::mysql \
-        DBI \
-        Digest::MD5 \
-        GD \
-        ExtUtils::PkgConfig \
-        HTTP::Tiny \
-        JSON \
-        Module::Build \
-        Try::Tiny \
-        Archive::Extract \
-        Archive::Zip
+    dnf install -y perl-autodie \
+    perl-DBD-mysql \
+    perl-ExtUtils-PkgConfig \
+    perl-Module-Build \
+    perl-Archive-Extract \
+    perl-CPAN
 
+    echo | cpan
     # Installed alone due to package dependency issues
-    cpanm \
-        Bio::DB::HTS::Faidx
+    cpan -i Bio::DB::HTS::Faidx
+
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    ./aws/install
 
 }
 
@@ -104,11 +96,11 @@ function vep_install {
 
 if [ "$VEP_VERSION" != "none" ]; then
     install_prereqs
-    vep_install
+    #vep_install
 
     # Cleanup
-    rm -rf /root/.cpanm
-    rm -rf /root/ensembl-vep
+    #rm -rf /root/.cpanm
+    #rm -rf /root/ensembl-vep
 else
     echo "VEP_VERSION environment variable was \"none\".  Skipping VEP installation."
 fi
