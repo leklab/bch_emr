@@ -37,6 +37,9 @@ function install_prereqs {
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     unzip awscliv2.zip
     ./aws/install
+    rm awscliv2.zip
+    rm -rf aws
+
 
 }
 
@@ -48,7 +51,9 @@ function gsutil_install {
 
 function vep_install {
     mkdir -p "$VEP_CACHE_DIR"
-    aws s3 sync --exclude "*" --include "*vep_${VEP_VERSION}*" "$VEP_S3_SOURCE$VEP_S3_CACHE_PATH" /tmp
+    mkdir -p $HOME/tmp
+
+    aws s3 sync --exclude "*" --include "*vep_${VEP_VERSION}*" "$VEP_S3_SOURCE$VEP_S3_CACHE_PATH" $HOME/tmp
 
     # Install VEP - the earliest version available from GitHub is 87
     if [ "$VEP_VERSION" -ge 87 ]; then
@@ -65,10 +70,10 @@ function vep_install {
         for REFERENCE in "${HUMAN_REFERENCES[@]}"
         do
             # Auto install (c)ache, and (f)asta
-            tar --directory "$VEP_CACHE_DIR"  -xf "/tmp/homo_sapiens_vep_${VEP_VERSION}_$REFERENCE.tar.gz"
+            tar --directory "$VEP_CACHE_DIR"  -xf "$HOME/tmp/homo_sapiens_vep_${VEP_VERSION}_$REFERENCE.tar.gz"
             perl INSTALL.pl --DESTDIR "$VEP_DIR" --CACHEDIR "$VEP_DIR"/cache --CACHEURL "$VEP_CACHE_DIR" \
                  --AUTO cf --SPECIES homo_sapiens --ASSEMBLY "$REFERENCE" --NO_HTSLIB --NO_UPDATE
-            rm "/tmp/homo_sapiens_vep_${VEP_VERSION}_$REFERENCE.tar.gz"
+            rm "$HOME/tmp/homo_sapiens_vep_${VEP_VERSION}_$REFERENCE.tar.gz"
         done
 
         # Plugins are installed to $HOME.  Install all (p)lugins, then move to common location
@@ -96,10 +101,11 @@ function vep_install {
 
 if [ "$VEP_VERSION" != "none" ]; then
     install_prereqs
-    #vep_install
+    vep_install
 
     # Cleanup
-    #rm -rf /root/.cpanm
+    rm -rf /root/.cpan
+    rm -rf /root/tmp
     #rm -rf /root/ensembl-vep
 else
     echo "VEP_VERSION environment variable was \"none\".  Skipping VEP installation."
