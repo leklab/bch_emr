@@ -15,31 +15,29 @@ REPOSITORY_URL="https://github.com/hail-is/hail.git"
 function install_prereqs {
   mkdir -p "$HAIL_ARTIFACT_DIR"
 
-  sed -i "s/#\$nrconf{kernelhints} = -1;/\$nrconf{kernelhints} = -1;/g" /etc/needrestart/needrestart.conf
+  dnf install -y python-is-python3 \
+  java-1.8.0-amazon-corretto-devel \
+  lz4-devel \
+  git \
+  R
 
-  apt-get update -y
-
-  NEEDRESTART_MODE=a apt-get install -y python-is-python3 \
-  python3-pip \
-  openjdk-8-jdk \
-  liblz4-dev \
-  awscli \
-  r-base \
-  r-base-dev
-
+  dnf remove -y awscli
 
   # Upgrade latest latest pip
+  python3 -m ensurepip
   python3 -m pip install --upgrade pip
 
   #install here
-  python3 -m pip install -U pyopenssl cryptography
-  python3 -m pip install --ignore-installed -U pyasn1-modules
+  python3 -m pip install --ignore-installed -U requests
+
+  alternatives --set java /usr/lib/jvm/java-1.8.0-amazon-corretto.x86_64/jre/bin/java
 
 }
 
 function hail_build
 {
   echo "Building Hail v.$HAIL_VERSION from source with Spark v.$SPARK_VERSION"
+  export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk
 
   git clone "$REPOSITORY_URL"
   cd hail/hail/
@@ -62,16 +60,15 @@ function hail_install
 export SPARK_HOME="/usr/lib/spark"
 export PYSPARK_PYTHON="python3"
 export PYSPARK_SUBMIT_ARGS="--conf spark.kryo.registrator=is.hail.kryo.HailKryoRegistrator --conf spark.serializer=org.apache.spark.serializer.KryoSerializer pyspark-shell"
-export PYTHONPATH="$HAIL_ARTIFACT_DIR/$WHEEL_HAIL:\$SPARK_HOME/python:\$SPARK_HOME/python/lib/py4j-src.zip:\$PYTHONPATH"
+export PYTHONPATH="\$SPARK_HOME/python:\$SPARK_HOME/python/lib/py4j-src.zip:\$PYTHONPATH"
 HAIL_PROFILE
 
   cp "$PWD/build/libs/$JAR_HAIL" "$HAIL_ARTIFACT_DIR"
-  cp "$PWD/build/deploy/dist/$WHEEL_HAIL" "$HAIL_ARTIFACT_DIR"
 }
 
 function cleanup()
 {
-  rm -rf /home/ubuntu/hail
+  rm -rf /home/ec2-user/hail
 }
 
 install_prereqs
