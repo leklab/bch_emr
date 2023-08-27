@@ -8,9 +8,7 @@ set -xe
 
 REPOSITORY_URL="https://github.com/samtools/htslib.git"
 
-NEEDRESTART_MODE=a apt install -y libbz2-dev \
-autoconf \
-liblzma-dev
+dnf install -y autoconf automake
 
 if [ -z "$HTSLIB_VERSION" ]; then
     HTSLIB_VERSION="develop";
