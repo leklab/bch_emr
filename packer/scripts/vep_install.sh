@@ -23,7 +23,7 @@ export LC_ALL=en_US.UTF-8
 
 function install_prereqs {
 
-    dnf install -y perl-autodie \
+    yum install -y perl-autodie \
     perl-DBD-mysql \
     perl-ExtUtils-PkgConfig \
     perl-Module-Build \
@@ -32,7 +32,8 @@ function install_prereqs {
 
     echo | cpan
     # Installed alone due to package dependency issues
-    cpan -i Bio::DB::HTS::Faidx
+    cpan BioPerl
+    cpan Bio::DB::HTS::Faidx
 
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     unzip awscliv2.zip
@@ -101,11 +102,11 @@ function vep_install {
 
 if [ "$VEP_VERSION" != "none" ]; then
     install_prereqs
-    vep_install
+    #vep_install
 
     # Cleanup
-    rm -rf /root/.cpan
-    rm -rf /root/tmp
+    #rm -rf /root/.cpan
+    #rm -rf /root/tmp
     #rm -rf /root/ensembl-vep
 else
     echo "VEP_VERSION environment variable was \"none\".  Skipping VEP installation."

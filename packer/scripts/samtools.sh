@@ -8,7 +8,7 @@ set -xe
 REPOSITORY_URL="https://github.com/samtools/samtools.git"
 HTSLIB_DIR="/opt/htslib"
 
-dnf install -y ncurses-devel
+#yum install -y ncurses-devel
 
 if [ -z "$SAMTOOLS_VERSION" ]; then
     SAMTOOLS_VERSION="master";

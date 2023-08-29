@@ -8,7 +8,7 @@ set -xe
 
 REPOSITORY_URL="https://github.com/samtools/htslib.git"
 
-dnf install -y autoconf automake
+#yum install -y autoconf automake
 
 if [ -z "$HTSLIB_VERSION" ]; then
     HTSLIB_VERSION="develop";
