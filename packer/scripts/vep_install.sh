@@ -23,14 +23,22 @@ export LC_ALL=en_US.UTF-8
 
 function install_prereqs {
 
+    export PERL_MM_USE_DEFAULT=1
+
     yum install -y perl-autodie \
     perl-DBD-mysql \
     perl-ExtUtils-PkgConfig \
     perl-Module-Build \
     perl-Archive-Extract \
+    perl-Archive-Zip \ 
     perl-CPAN
 
     echo | cpan
+    cpan CPAN
+
+    #Is this needed again?
+    echo | cpan
+
     # Installed alone due to package dependency issues
     cpan BioPerl
     cpan Bio::DB::HTS::Faidx

@@ -37,13 +37,14 @@ function upgrade_python3 {
 function install_prereqs {
   mkdir -p "$HAIL_ARTIFACT_DIR"
 
+  #Get's stuck here? due to python2/python3 problem with yum
   amazon-linux-extras enable corretto8
 
   yum install -y java-1.8.0-amazon-corretto-devel \
   lz4-devel \
   git
 
-  amazon-linux-extras -y install R4
+  amazon-linux-extras install R4 -y
 
   # Upgrade latest latest pip
   #python3 -m ensurepip
@@ -92,12 +93,12 @@ function cleanup()
 {
   rm -rf /home/ec2-user/hail
   rm -rf /home/ec2-user/Python-3.10.2
-  rm Python-3.10.2.tgz
+  rm /home/ec2-user/Python-3.10.2.tgz
 
 }
 
-#upgrade_python3
-#install_prereqs
-#hail_build
-#hail_install
+upgrade_python3
+install_prereqs
+hail_build
+hail_install
 cleanup
