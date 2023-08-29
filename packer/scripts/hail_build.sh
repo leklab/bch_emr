@@ -12,23 +12,45 @@ WHEEL_HAIL="hail-$HAIL_VERSION-py3-none-any.whl"
 
 REPOSITORY_URL="https://github.com/hail-is/hail.git"
 
+function upgrade_python3 {
+
+   yum groupinstall -y "Development Tools"
+
+   yum install -y libffi-devel bzip2-devel wget \
+   openssl11 openssl11-devel \
+   xz-devel \
+   ncurses-devel
+
+   wget https://www.python.org/ftp/python/3.10.2/Python-3.10.2.tgz
+   tar xzf Python-3.10.2.tgz
+   cd Python-3.10.2
+
+   ./configure --enable-optimizations --prefix=/usr
+   make -j $(nproc)
+   make altinstall
+
+   rm /usr/bin/python3
+   ln -s /usr/bin/python3.10 /usr/bin/python3
+
+}
+
 function install_prereqs {
   mkdir -p "$HAIL_ARTIFACT_DIR"
 
-  dnf install -y python-is-python3 \
-  java-1.8.0-amazon-corretto-devel \
-  lz4-devel \
-  git \
-  R
+  amazon-linux-extras enable corretto8
 
-  dnf remove -y awscli
+  yum install -y java-1.8.0-amazon-corretto-devel \
+  lz4-devel \
+  git
+
+  amazon-linux-extras -y install R4
 
   # Upgrade latest latest pip
-  python3 -m ensurepip
+  #python3 -m ensurepip
   python3 -m pip install --upgrade pip
 
   #install here
-  python3 -m pip install --ignore-installed -U requests
+  #python3 -m pip install --ignore-installed -U requests
 
   alternatives --set java /usr/lib/jvm/java-1.8.0-amazon-corretto.x86_64/jre/bin/java
 
@@ -69,9 +91,13 @@ HAIL_PROFILE
 function cleanup()
 {
   rm -rf /home/ec2-user/hail
+  rm -rf /home/ec2-user/Python-3.10.2
+  rm Python-3.10.2.tgz
+
 }
 
-install_prereqs
-hail_build
-hail_install
+#upgrade_python3
+#install_prereqs
+#hail_build
+#hail_install
 cleanup
