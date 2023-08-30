@@ -113,7 +113,7 @@ function vep_install {
 
 if [ "$VEP_VERSION" != "none" ]; then
     install_prereqs
-    #vep_install
+    vep_install
 
     # Cleanup
     #rm -rf /root/.cpan
