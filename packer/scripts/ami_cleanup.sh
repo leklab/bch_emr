@@ -7,5 +7,5 @@ rm -rf /root/.aws /root/.gradle /root/.local /root/.cache
 # Purge logs but retain directory structure
 find /var/log -type f -exec rm -v {} \;
 
-dnf clean all
+yum clean all
 history -c
