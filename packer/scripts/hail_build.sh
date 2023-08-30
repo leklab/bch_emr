@@ -16,6 +16,8 @@ function upgrade_python3 {
 
    yum groupinstall -y "Development Tools"
 
+   #installing openssl11 makes EMR not work!!
+   #This however is required to compile Python-3.10
    yum install -y libffi-devel bzip2-devel wget \
    openssl11 openssl11-devel \
    xz-devel \
@@ -37,6 +39,12 @@ function upgrade_python3 {
 function install_prereqs {
   mkdir -p "$HAIL_ARTIFACT_DIR"
 
+   yum groupinstall -y "Development Tools"
+
+   yum install -y libffi-devel bzip2-devel wget \
+   xz-devel \
+   ncurses-devel
+
   #Get's stuck here? due to python2/python3 problem with yum
   amazon-linux-extras enable corretto8
 
@@ -50,9 +58,6 @@ function install_prereqs {
   #python3 -m ensurepip
   python3 -m pip install --upgrade pip
 
-  #install here
-  #python3 -m pip install --ignore-installed -U requests
-
   alternatives --set java /usr/lib/jvm/java-1.8.0-amazon-corretto.x86_64/jre/bin/java
 
 }
@@ -64,6 +69,8 @@ function hail_build
 
   git clone "$REPOSITORY_URL"
   cd hail/hail/
+
+  #Hail version 0.2.115 is last supported by Python 3.7
   git checkout "$HAIL_VERSION"
 
   make install-on-cluster HAIL_COMPILE_NATIVES=1 SPARK_VERSION="$SPARK_VERSION"
@@ -92,13 +99,13 @@ HAIL_PROFILE
 function cleanup()
 {
   rm -rf /home/ec2-user/hail
-  rm -rf /home/ec2-user/Python-3.10.2
-  rm /home/ec2-user/Python-3.10.2.tgz
+  #rm -rf /home/ec2-user/Python-3.10.2
+  #rm /home/ec2-user/Python-3.10.2.tgz
 
 }
 
-upgrade_python3
-install_prereqs
-hail_build
+#upgrade_python3
+#install_prereqs
+#hail_build
 hail_install
-cleanup
+#cleanup

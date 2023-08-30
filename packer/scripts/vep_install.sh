@@ -23,31 +23,34 @@ export LC_ALL=en_US.UTF-8
 
 function install_prereqs {
 
-    export PERL_MM_USE_DEFAULT=1
+    #export PERL_MM_USE_DEFAULT=1
 
     yum install -y perl-autodie \
     perl-DBD-mysql \
     perl-ExtUtils-PkgConfig \
     perl-Module-Build \
     perl-Archive-Extract \
-    perl-Archive-Zip \ 
-    perl-CPAN
+    perl-Archive-Zip \
+    openssl-devel
 
-    echo | cpan
-    cpan CPAN
+    curl -L https://raw.githubusercontent.com/miyagawa/cpanminus/master/cpanm | perl - App::cpanminus
 
+
+    #perl-CPAN
+    #echo | cpan
+    #cpan CPAN
     #Is this needed again?
-    echo | cpan
+    #echo | cpan
 
     # Installed alone due to package dependency issues
-    cpan BioPerl
-    cpan Bio::DB::HTS::Faidx
+    #cpan BioPerl
+    cpanm Bio::DB::HTS::Faidx
 
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-    unzip awscliv2.zip
-    ./aws/install
-    rm awscliv2.zip
-    rm -rf aws
+    #curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    #unzip awscliv2.zip
+    #./aws/install
+    #rm awscliv2.zip
+    #rm -rf aws
 
 
 }
